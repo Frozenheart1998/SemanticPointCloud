@@ -11,6 +11,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/impl/voxel_grid.hpp>
 #include <cmath>
 #include <cstring>
 #include <gflags/gflags.h>
@@ -156,16 +157,16 @@ int main( int argc, char** argv ) {
         // Filter
         pcl::VoxelGrid<pcl::PointXYZRGB> vg_rgb;
         vg_rgb.setInputCloud(RGBPointCloud);
-        vg_rgb.setLeafSize(0.01f, 0.01f, 0.01f);//change leaf size into 0.5cm
+        vg_rgb.setLeafSize(0.1f, 0.1f, 0.1f);//change leaf size into 0.5cm
         vg_rgb.filter(*RGBPointCloudFiltered);
 
         // Construct Semantic Point Cloud and Filtered Point cloud
         // Vector for transformation between semantic class to corresponding BGR color
         cnpy::NpyArray cmap = cnpy::npy_load(FLAGS_sem_input_path + frame_string + ".npy");
         uint8_t *cmap_data = cmap.data<uint8_t>();
-        Eigen::Vector3f leaf_size(0.01f, 0.01f, 0.01f);
+        Eigen::Vector3f leaf_size(0.1f, 0.1f, 0.1f);
         SemanticVoxelCloud SemVoxelCloud(leaf_size, 0);
-        size_t* voxel_index = (std::size_t*) calloc(vg_rgb.getLeafLayout().size(), sizeof(std::size_t));
+//        size_t* voxel_index = (std::size_t*) calloc(vg_rgb.getLeafLayout().size(), sizeof(std::size_t));
         for (int frame = FLAGS_start_frame; frame < FLAGS_frame_num; frame += FLAGS_steps) {
             if (frame % 100 == 0)
                 cout << "Semantic: " << frame << endl;
