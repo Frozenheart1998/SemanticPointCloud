@@ -11,6 +11,8 @@
 #include "ProcessVector.h"
 //#include "NumCpp.hpp"
 
+typedef Eigen::Matrix<float, 40, 1> Vector40f;
+
 #define NUM_OF_CLASSES 40
 
 class SemanticVoxelGrid {
@@ -20,55 +22,64 @@ public:
         SemanticVoxelGrid(0, 0, 0);
     }
 
-    SemanticVoxelGrid(Eigen::Vector4i gridCoordinate)
+    SemanticVoxelGrid(Eigen::Vector4f gridCoordinate)
     {
         SemanticVoxelGrid(gridCoordinate[0], gridCoordinate[1], gridCoordinate[2]);
     }
 
-    SemanticVoxelGrid(Eigen::Vector3i gridCoordinate)
+    SemanticVoxelGrid(Eigen::Vector3f gridCoordinate)
     {
         SemanticVoxelGrid(gridCoordinate[0], gridCoordinate[1], gridCoordinate[2]);
     }
 
-    SemanticVoxelGrid(int x0, int x1, int x2)
+    SemanticVoxelGrid(float x0, float x1, float x2)
     {
-        this->gridCoordinate << x1, x2, x2;
-        memset(semanticVector, 0, sizeof(float) * NUM_OF_CLASSES);
+        this->xyz<< x1, x2, x2;
+        for (int i = 0; i < semanticVector.size(); i++)
+        {
+            semanticVector[0] = 0;
+        }
         numberOfPoints = 0;
-//        bgr << 0, 0, 0;
     }
 
 
     ~SemanticVoxelGrid(){}
 
-    void addSemanticVector (float* semanticVector)
+    void addPoint (Eigen::Vector3d xyz, Vector40f semanticVector)
     {
+        this->xyz[0] += xyz[0];
+        this->xyz[1] += xyz[1];
+        this->xyz[2] += xyz[2];
+
         for(int i = 0; i < NUM_OF_CLASSES; i++)
         {
-            this->semanticVector[i] += semanticVector[i];
+            this->semanticVector(i) += semanticVector(i);
         }
+
         numberOfPoints++;
     }
 
-    // inline void setGridColor() { bgr = getColorVector(semanticVector); }
-
-    inline Eigen::Vector3i getGridCoordinate() { return gridCoordinate; }
-    inline float* getSemanticVector() { return semanticVector; }
+    inline Eigen::Vector3f getXYZ() { return xyz; }
+    inline Vector40f getSemanticVector() { return semanticVector; }
     inline int getNumberOfPoints() { return numberOfPoints; }
-    inline Eigen::Vector3f getCentroid(Eigen::Vector3f size)
+
+    inline void setNumberOfPoints(int numberOfPoints) { this->numberOfPoints = numberOfPoints; }
+    inline void setXYZ(Eigen::Vector3f xyz) { this->xyz[0] = xyz[0]; this->xyz[1] = xyz[1]; this->xyz[2] = xyz[2]; }
+    void setSemanticVector(Vector40f semanticVector)
     {
-        return Eigen::Vector3f(size[0] * ((float)gridCoordinate[0] + 0.5),
-                               size[1] * ((float)gridCoordinate[1] + 0.5),
-                               size[2] * ((float)gridCoordinate[2] + 0.5));
+        for(int i = 0; i < NUM_OF_CLASSES; i++)
+        {
+            this->semanticVector(i) = semanticVector(i);
+        }
     }
+
 
     // inline Eigen::Vector3i getBGR() { return bgr; }
 
 private:
-    Eigen::Vector3i gridCoordinate;
-    float semanticVector[40];
+    Eigen::Vector3f xyz;
+    Vector40f semanticVector;
     int numberOfPoints;
-    // Eigen::Vector3i bgr;
 };
 
 
