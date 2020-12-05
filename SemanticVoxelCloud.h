@@ -17,11 +17,12 @@
 #include <fstream>
 #include <chrono>
 #include "SemanticVoxelGrid.h"
-#include "ProcessVector.h"
 #include "cnpy.h"
 
 #define CMAP_ROW 256
 #define CMAP_COL 3
+
+using namespace std;
 
 // defines pcl type
 typedef pcl::PointXYZRGB PointT;
@@ -76,7 +77,7 @@ public:
         {
             if (frame % 100 == 0)
                 cout << "Semantic Filter: " << frame << endl;
-            char frame_string[12];
+            char frame_string[13];
             sprintf(frame_string, "frame-%06d", frame);
 
             ifstream fin(input_path + frame_string + ".pose.txt");
@@ -132,10 +133,24 @@ public:
                     pointWorld[1] = -pointWorld[1];
                     pointWorld[2] = -pointWorld[2];
 
-                    Vector40f semanticVector;
+                    /*Vector40f semanticVector;
                     for (int idx = 0; idx < NUM_OF_CLASSES; idx++) {
                         semanticVector(idx) = *(semanImg.data<float>() + (depthImg.cols * v + u) * NUM_OF_CLASSES +
                                                 idx);
+                    }*/
+                    Vector40f semanticVector = Vector40f::Zero();
+                    // ['bed','books','ceiling','chair','floor','furniture','objects','picture','sofa','table','tv','wall','window']
+                    int index_to_13[40] = {0, 1, 2, 3, 4, 5, 6, 0, 8, 2,
+                                           10, 2, 8, 6, 2, 8, 2, 15, 15, 1,
+                                           15, 21, 22, 2, 24, 15, 15, 15, 15, 15,
+                                           15, 2, 15, 15, 15, 15, 15, 15, 2, 15};
+                    /*int index_to_13[40] = {11, 4, 5, 0, 3, 8, 9, 11, 12, 5,
+                                           7, 5, 12, 9, 5, 12, 5, 6, 6, 4,
+                                           6, 2, 1, 5, 10, 6, 6, 6, 6, 6,
+                                           6, 5, 6, 6, 6, 6, 6, 6, 5, 6};*/
+                    for (int idx = 0; idx < NUM_OF_CLASSES; idx++) {
+                        semanticVector(index_to_13[idx]) += *(semanImg.data<float>() +
+                                                              (depthImg.cols * v + u) * NUM_OF_CLASSES + idx);
                     }
 
                     PointT p;

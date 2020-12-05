@@ -50,7 +50,7 @@ find_package( gflags )
 include_directories( ${gflags_INCLUDE_DIRS} )
 add_definitions( ${gflags_DEFINITIONS} )
 
-add_executable(Projection main.cpp SemanticVoxelGrid.h SemanticVoxelCloud.cpp SemanticVoxelCloud.h ProcessVector.h ProcessVector.cpp voxel_grid.hpp)
+add_executable(Projection main.cpp SemanticVoxelGrid.h SemanticVoxelCloud.cpp SemanticVoxelCloud.h)
 target_link_libraries( Projection ${OpenCV_LIBS} )
 target_link_libraries( Projection ${PCL_LIBRARIES} -lpcl_filters )
 target_link_libraries( Projection gflags )

@@ -8,12 +8,11 @@
 #include <vector>
 #include <Eigen/Geometry>
 #include <pcl/filters/voxel_grid.h>
-#include "ProcessVector.h"
-//#include "NumCpp.hpp"
 
 typedef Eigen::Matrix<float, 40, 1> Vector40f;
 
 #define NUM_OF_CLASSES 40
+#define NUM_OF_SMALL_CLASSES 13
 
 class SemanticVoxelGrid {
 public:
